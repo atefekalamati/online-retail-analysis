@@ -26,6 +26,7 @@ table Date
 		annotation SummarizationSetBy = Automatic
 
 	column MonthNum
+		isHidden
 		formatString: 0
 		lineageTag: 5a5b2e17-8887-45a3-b0fb-308f1c0991be
 		summarizeBy: none

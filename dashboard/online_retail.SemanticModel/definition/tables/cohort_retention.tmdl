@@ -3,7 +3,7 @@ table cohort_retention
 
 	column cohort
 		dataType: dateTime
-		formatString: Long Date
+		formatString: yyyy-mm
 		lineageTag: ea837c8d-10b7-4a7d-97ee-38d5e3c92328
 		summarizeBy: none
 		sourceColumn: cohort
@@ -28,13 +28,12 @@ table cohort_retention
 
 	column retention_pct
 		dataType: double
+		formatString: 0.0%;-0.0%;0.0%
 		lineageTag: 69ff024f-8971-4bdd-97c5-a116b147e743
-		summarizeBy: sum
+		summarizeBy: average
 		sourceColumn: retention_pct
 
-		annotation SummarizationSetBy = Automatic
-
-		annotation PBI_FormatHint = {"isGeneralNumber":true}
+		annotation SummarizationSetBy = User
 
 	column cohort_size
 		dataType: int64
@@ -49,11 +48,12 @@ table cohort_retention
 		mode: import
 		source =
 				let
-				    Source = Csv.Document(File.Contents("E:\BI\mini\online-retail-analysis\data\processed\powerbi\cohort_retention.csv"),[Delimiter=",", Columns=4, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    Source = Csv.Document(File.Contents("E:\BI\mini\online-retail-analysis\data\processed\powerbi\cohort_retention.csv"),[Delimiter=",", Columns=4, Encoding=65001, QuoteStyle=QuoteStyle.None]),
 				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
-				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"cohort", type date}, {"month_index", Int64.Type}, {"retention_pct", type number}, {"cohort_size", Int64.Type}})
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"cohort", type date}, {"month_index", Int64.Type}, {"retention_pct", type number}, {"cohort_size", Int64.Type}}),
+				    #"Percent to fraction" = Table.TransformColumns(#"Changed Type",{{"retention_pct", each _ / 100, type number}})
 				in
-				    #"Changed Type"
+				    #"Percent to fraction"
 
 	annotation PBI_ResultType = Table
 

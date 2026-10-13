@@ -3,6 +3,7 @@ table fact_sales
 
 	column date
 		dataType: dateTime
+		isHidden
 		formatString: General Date
 		lineageTag: 60afd758-ad2e-456a-915f-21e092507da1
 		summarizeBy: none
@@ -105,6 +106,7 @@ table fact_sales
 
 	column is_fully_cancelled_order
 		dataType: boolean
+		isHidden
 		formatString: """TRUE"";""TRUE"";""FALSE"""
 		lineageTag: 2e5ae98d-a6e4-4c84-bf12-8cdd40b684a4
 		summarizeBy: none
@@ -131,7 +133,7 @@ table fact_sales
 		mode: import
 		source =
 				let
-				    Source = Csv.Document(File.Contents("E:\BI\mini\online-retail-analysis\data\processed\powerbi\fact_sales.csv"),[Delimiter=",", Columns=12, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    Source = Csv.Document(File.Contents("E:\BI\mini\online-retail-analysis\data\processed\powerbi\fact_sales.csv"),[Delimiter=",", Columns=12, Encoding=65001, QuoteStyle=QuoteStyle.None]),
 				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
 				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"date", type datetime}, {"invoice", type text}, {"stock_code", type text}, {"description", type text}, {"country", type text}, {"customer_id", Int64.Type}, {"quantity", Int64.Type}, {"price", type number}, {"line_revenue", type number}, {"is_cancelled", type logical}, {"has_customer", type logical}, {"is_fully_cancelled_order", type logical}})
 				in

@@ -1,0 +1,38 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "0b12b4379a0cfc6504d6",
+  "position": {
+    "x": 24,
+    "y": 72,
+    "z": 1,
+    "height": 40,
+    "width": 1232,
+    "tabOrder": 1
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Top 20% of customers = 77% of customer revenue",
+                    "textStyle": {
+                      "fontWeight": "normal",
+                      "fontSize": "14pt",
+                      "color": "#0B0B0B"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

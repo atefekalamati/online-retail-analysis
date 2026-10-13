@@ -20,33 +20,32 @@ table segment_summary
 
 	column customers_pct
 		dataType: double
+		formatString: 0.0%;-0.0%;0.0%
 		lineageTag: 5de75a50-f577-4dce-89da-c6308a24eefc
-		summarizeBy: sum
+		summarizeBy: average
 		sourceColumn: customers_pct
 
-		annotation SummarizationSetBy = Automatic
-
-		annotation PBI_FormatHint = {"isGeneralNumber":true}
+		annotation SummarizationSetBy = User
 
 	column revenue
 		dataType: double
+		formatString: \£#,0;-\£#,0;\£#,0
 		lineageTag: 3a848a9d-5f16-47ab-be17-6ec59305aeeb
 		summarizeBy: sum
 		sourceColumn: revenue
 
 		annotation SummarizationSetBy = Automatic
 
-		annotation PBI_FormatHint = {"isGeneralNumber":true}
+		annotation PBI_FormatHint = {"currencyCulture":"en-GB"}
 
 	column revenue_pct
 		dataType: double
+		formatString: 0.0%;-0.0%;0.0%
 		lineageTag: bc4c5db3-742e-4ebc-8123-acfeb10b3a93
-		summarizeBy: sum
+		summarizeBy: average
 		sourceColumn: revenue_pct
 
-		annotation SummarizationSetBy = Automatic
-
-		annotation PBI_FormatHint = {"isGeneralNumber":true}
+		annotation SummarizationSetBy = User
 
 	column avg_recency_days
 		dataType: double
@@ -82,11 +81,12 @@ table segment_summary
 		mode: import
 		source =
 				let
-				    Source = Csv.Document(File.Contents("E:\BI\mini\online-retail-analysis\data\processed\powerbi\segment_summary.csv"),[Delimiter=",", Columns=8, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    Source = Csv.Document(File.Contents("E:\BI\mini\online-retail-analysis\data\processed\powerbi\segment_summary.csv"),[Delimiter=",", Columns=8, Encoding=65001, QuoteStyle=QuoteStyle.None]),
 				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
-				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"segment", type text}, {"customers", Int64.Type}, {"customers_pct", type number}, {"revenue", type number}, {"revenue_pct", type number}, {"avg_recency_days", type number}, {"avg_frequency", type number}, {"avg_revenue_per_customer", type number}})
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"segment", type text}, {"customers", Int64.Type}, {"customers_pct", type number}, {"revenue", type number}, {"revenue_pct", type number}, {"avg_recency_days", type number}, {"avg_frequency", type number}, {"avg_revenue_per_customer", type number}}),
+				    #"Percent to fraction" = Table.TransformColumns(#"Changed Type",{{"customers_pct", each _ / 100, type number}, {"revenue_pct", each _ / 100, type number}})
 				in
-				    #"Changed Type"
+				    #"Percent to fraction"
 
 	annotation PBI_ResultType = Table
 

@@ -117,7 +117,7 @@ table monthly_kpis
 		mode: import
 		source =
 				let
-				    Source = Csv.Document(File.Contents("E:\BI\mini\online-retail-analysis\data\processed\powerbi\monthly_kpis.csv"),[Delimiter=",", Columns=11, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    Source = Csv.Document(File.Contents("E:\BI\mini\online-retail-analysis\data\processed\powerbi\monthly_kpis.csv"),[Delimiter=",", Columns=11, Encoding=65001, QuoteStyle=QuoteStyle.None]),
 				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
 				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"month", type date}, {"net_revenue", type number}, {"gross_revenue", type number}, {"cancellations", type number}, {"cancellation_rate_pct", type number}, {"orders", Int64.Type}, {"fully_cancelled_orders", Int64.Type}, {"customers", Int64.Type}, {"avg_order_value", type number}, {"is_partial_month", type logical}, {"mom_growth_pct", type number}})
 				in
