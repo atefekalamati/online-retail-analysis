@@ -1,0 +1,127 @@
+table monthly_kpis
+	lineageTag: 1ec14257-11c1-439c-96c9-9e134c9beb77
+
+	column month
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 50eaae7c-54a0-404e-b7f0-3b5e1a1fdff4
+		summarizeBy: none
+		sourceColumn: month
+
+		variation Variation
+			isDefault
+			relationship: aa8fa062-4062-4c9f-9567-0ce947b3fcf4
+			defaultHierarchy: LocalDateTable_0b3841ce-5edb-42d3-abf2-5f7ee622f358.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column net_revenue
+		dataType: double
+		lineageTag: 3d7eaa70-fd74-4b65-a614-b71d09a56be3
+		summarizeBy: sum
+		sourceColumn: net_revenue
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column gross_revenue
+		dataType: double
+		lineageTag: 4fb1933e-15a5-4f5f-a168-c9e8b66c5360
+		summarizeBy: sum
+		sourceColumn: gross_revenue
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column cancellations
+		dataType: double
+		lineageTag: 5525ec8a-666f-4b84-8d85-c86d90793d95
+		summarizeBy: sum
+		sourceColumn: cancellations
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column cancellation_rate_pct
+		dataType: double
+		lineageTag: 661ec7c8-5739-4d98-a722-5161cb7c9f48
+		summarizeBy: sum
+		sourceColumn: cancellation_rate_pct
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column orders
+		dataType: int64
+		formatString: 0
+		lineageTag: df6f766a-716b-448d-9583-c3ee03f93f44
+		summarizeBy: sum
+		sourceColumn: orders
+
+		annotation SummarizationSetBy = Automatic
+
+	column fully_cancelled_orders
+		dataType: int64
+		formatString: 0
+		lineageTag: 6259af7e-27e3-4e3e-abd1-09a99c15e12e
+		summarizeBy: sum
+		sourceColumn: fully_cancelled_orders
+
+		annotation SummarizationSetBy = Automatic
+
+	column customers
+		dataType: int64
+		formatString: 0
+		lineageTag: e3c88094-45ff-4245-b5e6-cbc48117d4c2
+		summarizeBy: sum
+		sourceColumn: customers
+
+		annotation SummarizationSetBy = Automatic
+
+	column avg_order_value
+		dataType: double
+		lineageTag: 9c1e9791-08bb-4753-a086-0c85436d821b
+		summarizeBy: sum
+		sourceColumn: avg_order_value
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column is_partial_month
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 7b2458bc-5e7f-4389-89fc-def4266d9475
+		summarizeBy: none
+		sourceColumn: is_partial_month
+
+		annotation SummarizationSetBy = Automatic
+
+	column mom_growth_pct
+		dataType: double
+		lineageTag: de7a9de2-86e7-480d-9d03-d545d21afd30
+		summarizeBy: sum
+		sourceColumn: mom_growth_pct
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition monthly_kpis = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("E:\BI\mini\online-retail-analysis\data\processed\powerbi\monthly_kpis.csv"),[Delimiter=",", Columns=11, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"month", type date}, {"net_revenue", type number}, {"gross_revenue", type number}, {"cancellations", type number}, {"cancellation_rate_pct", type number}, {"orders", Int64.Type}, {"fully_cancelled_orders", Int64.Type}, {"customers", Int64.Type}, {"avg_order_value", type number}, {"is_partial_month", type logical}, {"mom_growth_pct", type number}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_ResultType = Table
+

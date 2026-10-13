@@ -1,0 +1,23 @@
+relationship 5fa8f7dc-0c01-40f2-b492-ac014e91fcfb
+	joinOnDateBehavior: datePartOnly
+	fromColumn: fact_sales.date
+	toColumn: LocalDateTable_37d37620-4f2a-4aa4-a336-25cf1131dad1.Date
+
+relationship 7d43e1ae-67d8-4349-ad0a-68042340faf2
+	joinOnDateBehavior: datePartOnly
+	fromColumn: cohort_retention.cohort
+	toColumn: LocalDateTable_fe09a05d-35f0-4a1d-aee9-af92f22fee38.Date
+
+relationship aa8fa062-4062-4c9f-9567-0ce947b3fcf4
+	joinOnDateBehavior: datePartOnly
+	fromColumn: monthly_kpis.month
+	toColumn: LocalDateTable_0b3841ce-5edb-42d3-abf2-5f7ee622f358.Date
+
+relationship AutoDetected_19bff0dc-da86-444b-ab3e-c9de9472baa0
+	fromColumn: fact_sales.customer_id
+	toColumn: rfm_customers.customer_id
+
+relationship 6c84a7f4-10c2-b038-9b48-562a57197344
+	fromColumn: fact_sales.invoice_day
+	toColumn: Date.Date
+
