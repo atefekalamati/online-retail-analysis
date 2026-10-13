@@ -1,0 +1,29 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-US
+	valueFilterBehavior: independent
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_QueryOrder = ["fact_sales","cohort_retention","monthly_kpis","rfm_customers","segment_summary","_Measures"]
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table fact_sales
+ref table DateTableTemplate_8a1c6fa1-7864-44dc-83ad-648e86ef7e7c
+ref table LocalDateTable_37d37620-4f2a-4aa4-a336-25cf1131dad1
+ref table cohort_retention
+ref table LocalDateTable_fe09a05d-35f0-4a1d-aee9-af92f22fee38
+ref table monthly_kpis
+ref table LocalDateTable_0b3841ce-5edb-42d3-abf2-5f7ee622f358
+ref table rfm_customers
+ref table segment_summary
+ref table Date
+ref table _Measures
+
+ref cultureInfo en-US
+

@@ -1,0 +1,11 @@
+venv/
+data/raw/
+data/processed/
+.ipynb_checkpoints/
+__pycache__/
+
+# Power BI
+*.pbix
+dashboard_backup/
+**/.pbi/cache.abf
+**/localSettings.json

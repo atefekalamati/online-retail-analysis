@@ -1,0 +1,63 @@
+{
+  "name": "Online Retail - Navy Blue",
+  "dataColors": [
+    "#2a78d6",
+    "#eb6834",
+    "#184f95",
+    "#86b6ef",
+    "#1baf7a",
+    "#eda100",
+    "#6250d6",
+    "#e34948"
+  ],
+  "background": "#fcfcfb",
+  "foreground": "#0b0b0b",
+  "tableAccent": "#2a78d6",
+  "good": "#1baf7a",
+  "neutral": "#eda100",
+  "bad": "#e34948",
+  "minimum": "#cde2fb",
+  "center": "#6da7ec",
+  "maximum": "#0d366b",
+  "null": "#e4e3df",
+  "textClasses": {
+    "callout": { "fontSize": 28, "fontFace": "Segoe UI Semibold", "color": "#0d366b" },
+    "title": { "fontSize": 12, "fontFace": "Segoe UI Semibold", "color": "#0b0b0b" },
+    "header": { "fontSize": 11, "fontFace": "Segoe UI Semibold", "color": "#0b0b0b" },
+    "label": { "fontSize": 10, "fontFace": "Segoe UI", "color": "#52514e" }
+  },
+  "visualStyles": {
+    "*": {
+      "*": {
+        "background": [{ "show": true, "color": { "solid": { "color": "#ffffff" } }, "transparency": 0 }],
+        "border": [{ "show": false }],
+        "dropShadow": [{ "show": false }],
+        "title": [{ "show": true, "fontColor": { "solid": { "color": "#0b0b0b" } }, "fontSize": 12, "alignment": "left" }],
+        "valueAxis": [{ "gridlineColor": { "solid": { "color": "#e4e3df" } }, "gridlineStyle": "solid", "labelColor": { "solid": { "color": "#52514e" } } }],
+        "categoryAxis": [{ "labelColor": { "solid": { "color": "#52514e" } } }],
+        "legend": [{ "labelColor": { "solid": { "color": "#52514e" } } }]
+      }
+    },
+    "page": {
+      "*": {
+        "background": [{ "color": { "solid": { "color": "#fcfcfb" } }, "transparency": 0 }]
+      }
+    },
+    "card": {
+      "*": {
+        "labels": [{ "color": { "solid": { "color": "#0d366b" } }, "fontSize": 26 }],
+        "categoryLabels": [{ "color": { "solid": { "color": "#52514e" } }, "fontSize": 10 }]
+      }
+    },
+    "lineChart": {
+      "*": {
+        "lineStyles": [{ "strokeWidth": 2 }]
+      }
+    },
+    "slicer": {
+      "*": {
+        "header": [{ "fontColor": { "solid": { "color": "#0b0b0b" } } }]
+      }
+    }
+  }
+}

@@ -1,0 +1,80 @@
+// =====================================================================
+// Online Retail II - DAX measures
+// Create these in the fact_sales table (Home > New measure), one at a time.
+// They reproduce the definitions in notebooks/03_analysis.ipynb.
+// Requires: fact_sales (product rows only) and a marked 'Date' table
+// related to fact_sales[order_date]. See BUILD_GUIDE.md.
+// =====================================================================
+
+
+// Net revenue: purchases plus cancellations (cancellation rows are negative).
+Net Revenue =
+SUM ( fact_sales[line_revenue] )
+
+
+// Gross revenue: purchases only, cancellation rows excluded.
+Gross Revenue =
+CALCULATE ( [Net Revenue], fact_sales[is_cancelled] = FALSE () )
+
+
+// Cancellations: value of cancellation rows (a negative number).
+Cancellations =
+CALCULATE ( [Net Revenue], fact_sales[is_cancelled] = TRUE () )
+
+
+// Cancellation rate: cancelled value as a share of gross revenue (format as %).
+Cancellation Rate % =
+DIVIDE ( - [Cancellations], [Gross Revenue] )
+
+
+// Orders: distinct purchase invoices, excluding orders that were fully cancelled later.
+Orders =
+CALCULATE (
+    DISTINCTCOUNT ( fact_sales[invoice] ),
+    fact_sales[is_cancelled] = FALSE (),
+    fact_sales[is_fully_cancelled_order] = FALSE ()
+)
+
+
+// Customers: distinct customer IDs with at least one purchase (blank IDs ignored).
+Customers =
+CALCULATE (
+    DISTINCTCOUNTNOBLANK ( fact_sales[customer_id] ),
+    fact_sales[is_cancelled] = FALSE ()
+)
+
+
+// Average order value: revenue of the counted orders divided by the number of orders.
+Avg Order Value =
+DIVIDE (
+    CALCULATE (
+        [Net Revenue],
+        fact_sales[is_cancelled] = FALSE (),
+        fact_sales[is_fully_cancelled_order] = FALSE ()
+    ),
+    [Orders]
+)
+
+
+// Net revenue of the previous month in the current filter context (helper for MoM).
+Revenue Previous Month =
+CALCULATE ( [Net Revenue], DATEADD ( 'Date'[Date], -1, MONTH ) )
+
+
+// Month-over-month change in net revenue (format as %); blank when there is no previous month.
+Revenue MoM % =
+VAR PreviousMonth = [Revenue Previous Month]
+RETURN
+    IF ( NOT ISBLANK ( PreviousMonth ), DIVIDE ( [Net Revenue] - PreviousMonth, PreviousMonth ) )
+
+
+// Net revenue in the same period one year earlier (same month on a monthly axis).
+Revenue Same Month LY =
+CALCULATE ( [Net Revenue], SAMEPERIODLASTYEAR ( 'Date'[Date] ) )
+
+
+// Year-over-year change in net revenue (format as %); blank when last year has no data.
+YoY % =
+VAR LastYear = [Revenue Same Month LY]
+RETURN
+    IF ( NOT ISBLANK ( LastYear ), DIVIDE ( [Net Revenue] - LastYear, LastYear ) )

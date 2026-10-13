@@ -1,0 +1,141 @@
+table fact_sales
+	lineageTag: c76e2059-f086-4ae3-ba10-1c1933b3ac1e
+
+	column date
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 60afd758-ad2e-456a-915f-21e092507da1
+		summarizeBy: none
+		sourceColumn: date
+
+		variation Variation
+			isDefault
+			relationship: 5fa8f7dc-0c01-40f2-b492-ac014e91fcfb
+			defaultHierarchy: LocalDateTable_37d37620-4f2a-4aa4-a336-25cf1131dad1.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column invoice
+		dataType: string
+		lineageTag: 6fc4ee1e-fa33-4181-8673-cbbbcdbfc3dc
+		summarizeBy: none
+		sourceColumn: invoice
+
+		annotation SummarizationSetBy = Automatic
+
+	column stock_code
+		dataType: string
+		lineageTag: 7db4568e-4a13-4e5a-8131-5f0a98b392f5
+		summarizeBy: none
+		sourceColumn: stock_code
+
+		annotation SummarizationSetBy = Automatic
+
+	column description
+		dataType: string
+		lineageTag: c2648aa3-e9b9-43e0-9218-6a99d6597753
+		summarizeBy: none
+		sourceColumn: description
+
+		annotation SummarizationSetBy = Automatic
+
+	column country
+		dataType: string
+		lineageTag: db917cce-7af6-4923-8d6a-daf6137f2a6b
+		summarizeBy: none
+		sourceColumn: country
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_id
+		dataType: int64
+		formatString: 0
+		lineageTag: fb59d328-a30c-470e-a770-442696edbaaf
+		summarizeBy: none
+		sourceColumn: customer_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column quantity
+		dataType: int64
+		formatString: 0
+		lineageTag: b006f9d4-9796-41b0-a3ea-1f487ea66af5
+		summarizeBy: sum
+		sourceColumn: quantity
+
+		annotation SummarizationSetBy = Automatic
+
+	column price
+		dataType: double
+		lineageTag: 0f18a223-3b7b-4217-aa1a-addf53699a10
+		summarizeBy: sum
+		sourceColumn: price
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column line_revenue
+		dataType: double
+		lineageTag: f2b8eb48-855e-498d-9349-a87df9dd6866
+		summarizeBy: sum
+		sourceColumn: line_revenue
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column is_cancelled
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 7b644be2-1be8-4270-a37b-6fe6374b8b1a
+		summarizeBy: none
+		sourceColumn: is_cancelled
+
+		annotation SummarizationSetBy = Automatic
+
+	column has_customer
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 9822d2b2-a982-4f3a-88c0-6ad281e7ae57
+		summarizeBy: none
+		sourceColumn: has_customer
+
+		annotation SummarizationSetBy = Automatic
+
+	column is_fully_cancelled_order
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 2e5ae98d-a6e4-4c84-bf12-8cdd40b684a4
+		summarizeBy: none
+		sourceColumn: is_fully_cancelled_order
+
+		annotation SummarizationSetBy = Automatic
+
+	column invoice_day = DATEVALUE(fact_sales[date])
+		formatString: m/d/yyyy
+		lineageTag: a7523c84-45a3-4d40-949f-ce1c19d316dc
+		summarizeBy: none
+
+		changedProperty = DataType
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	partition fact_sales = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("E:\BI\mini\online-retail-analysis\data\processed\powerbi\fact_sales.csv"),[Delimiter=",", Columns=12, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"date", type datetime}, {"invoice", type text}, {"stock_code", type text}, {"description", type text}, {"country", type text}, {"customer_id", Int64.Type}, {"quantity", Int64.Type}, {"price", type number}, {"line_revenue", type number}, {"is_cancelled", type logical}, {"has_customer", type logical}, {"is_fully_cancelled_order", type logical}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_ResultType = Table
+

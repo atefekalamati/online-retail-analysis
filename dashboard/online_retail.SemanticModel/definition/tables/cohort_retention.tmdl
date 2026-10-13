@@ -1,0 +1,59 @@
+table cohort_retention
+	lineageTag: 68a16965-32d9-4a2a-bad1-faa3f66df4c6
+
+	column cohort
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: ea837c8d-10b7-4a7d-97ee-38d5e3c92328
+		summarizeBy: none
+		sourceColumn: cohort
+
+		variation Variation
+			isDefault
+			relationship: 7d43e1ae-67d8-4349-ad0a-68042340faf2
+			defaultHierarchy: LocalDateTable_fe09a05d-35f0-4a1d-aee9-af92f22fee38.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column month_index
+		dataType: int64
+		formatString: 0
+		lineageTag: 98981611-a980-4aad-bb77-a30569ed1850
+		summarizeBy: sum
+		sourceColumn: month_index
+
+		annotation SummarizationSetBy = Automatic
+
+	column retention_pct
+		dataType: double
+		lineageTag: 69ff024f-8971-4bdd-97c5-a116b147e743
+		summarizeBy: sum
+		sourceColumn: retention_pct
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column cohort_size
+		dataType: int64
+		formatString: 0
+		lineageTag: 20fd8868-5a95-4097-bbcf-34157cfcd43c
+		summarizeBy: sum
+		sourceColumn: cohort_size
+
+		annotation SummarizationSetBy = Automatic
+
+	partition cohort_retention = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("E:\BI\mini\online-retail-analysis\data\processed\powerbi\cohort_retention.csv"),[Delimiter=",", Columns=4, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"cohort", type date}, {"month_index", Int64.Type}, {"retention_pct", type number}, {"cohort_size", Int64.Type}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_ResultType = Table
+

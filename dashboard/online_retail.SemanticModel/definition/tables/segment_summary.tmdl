@@ -1,0 +1,92 @@
+table segment_summary
+	lineageTag: 2948fc0c-3881-410e-9138-08e9b677c24a
+
+	column segment
+		dataType: string
+		lineageTag: 4205e431-b14a-4690-bb9e-7809196c23bd
+		summarizeBy: none
+		sourceColumn: segment
+
+		annotation SummarizationSetBy = Automatic
+
+	column customers
+		dataType: int64
+		formatString: 0
+		lineageTag: b1bdf1d2-e2b3-46d4-8234-7247aa05f92a
+		summarizeBy: sum
+		sourceColumn: customers
+
+		annotation SummarizationSetBy = Automatic
+
+	column customers_pct
+		dataType: double
+		lineageTag: 5de75a50-f577-4dce-89da-c6308a24eefc
+		summarizeBy: sum
+		sourceColumn: customers_pct
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column revenue
+		dataType: double
+		lineageTag: 3a848a9d-5f16-47ab-be17-6ec59305aeeb
+		summarizeBy: sum
+		sourceColumn: revenue
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column revenue_pct
+		dataType: double
+		lineageTag: bc4c5db3-742e-4ebc-8123-acfeb10b3a93
+		summarizeBy: sum
+		sourceColumn: revenue_pct
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column avg_recency_days
+		dataType: double
+		lineageTag: 9afbde47-e9d5-4bf1-9108-42cd39cd7332
+		summarizeBy: sum
+		sourceColumn: avg_recency_days
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column avg_frequency
+		dataType: double
+		lineageTag: 14da87a4-d696-4d02-bdda-3a1164c94743
+		summarizeBy: sum
+		sourceColumn: avg_frequency
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column avg_revenue_per_customer
+		dataType: double
+		lineageTag: 5d552a70-b9a1-4c75-87eb-02f25a4b2a54
+		summarizeBy: sum
+		sourceColumn: avg_revenue_per_customer
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition segment_summary = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("E:\BI\mini\online-retail-analysis\data\processed\powerbi\segment_summary.csv"),[Delimiter=",", Columns=8, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"segment", type text}, {"customers", Int64.Type}, {"customers_pct", type number}, {"revenue", type number}, {"revenue_pct", type number}, {"avg_recency_days", type number}, {"avg_frequency", type number}, {"avg_revenue_per_customer", type number}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_ResultType = Table
+

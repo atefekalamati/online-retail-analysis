@@ -1,0 +1,81 @@
+table Date
+	lineageTag: e4e21694-3160-4208-a887-a2a69e1fad9a
+	dataCategory: Time
+
+	column Date
+		isKey
+		formatString: m/d/yyyy
+		lineageTag: 41f4b448-9eb1-417d-b6b6-75b1f7573c46
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Date]
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column Year
+		formatString: 0
+		lineageTag: 5a475ae6-b880-417f-a0b9-78ba03cbe6a6
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Year]
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthNum
+		formatString: 0
+		lineageTag: 5a5b2e17-8887-45a3-b0fb-308f1c0991be
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [MonthNum]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Month
+		lineageTag: 16d39339-389b-41a1-a5e6-6cd90bf28575
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Month]
+		sortByColumn: MonthNum
+
+		annotation SummarizationSetBy = Automatic
+
+	column YearMonth
+		lineageTag: 99dfee4a-1d75-479a-b636-4d2930633f82
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [YearMonth]
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthStart
+		formatString: m/d/yyyy
+		lineageTag: 84114ae7-6f6c-4127-9d5f-d6307b57774e
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [MonthStart]
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	partition Date = calculated
+		mode: import
+		source =
+				
+				ADDCOLUMNS (
+				    CALENDAR ( DATE ( 2009, 12, 1 ), DATE ( 2011, 12, 31 ) ),
+				    "Year", YEAR ( [Date] ),
+				    "MonthNum", MONTH ( [Date] ),
+				    "Month", FORMAT ( [Date], "MMM" ),
+				    "YearMonth", FORMAT ( [Date], "YYYY-MM" ),
+				    "MonthStart", DATE ( YEAR ( [Date] ), MONTH ( [Date] ), 1 )
+				)
+
+	annotation PBI_Id = 27a712aab1b9419ab215e766a04614d6
+

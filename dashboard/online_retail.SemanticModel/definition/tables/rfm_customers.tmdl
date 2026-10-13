@@ -1,0 +1,96 @@
+table rfm_customers
+	lineageTag: a1120c1b-336a-4612-bf54-512b7d33722a
+
+	column customer_id
+		dataType: int64
+		formatString: 0
+		lineageTag: 69258538-2966-4187-a6d0-01be4702f51f
+		summarizeBy: none
+		sourceColumn: customer_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column recency_days
+		dataType: int64
+		formatString: 0
+		lineageTag: 4cff590a-041d-48f3-a984-901beca3247c
+		summarizeBy: none
+		sourceColumn: recency_days
+
+		annotation SummarizationSetBy = Automatic
+
+	column frequency
+		dataType: int64
+		formatString: 0
+		lineageTag: 6715e063-1fc7-47bd-a3f2-2b62c9ec2cb7
+		summarizeBy: none
+		sourceColumn: frequency
+
+		annotation SummarizationSetBy = Automatic
+
+	column net_revenue
+		dataType: double
+		lineageTag: efefb290-158a-4f4c-b84f-66a92db26ca0
+		summarizeBy: none
+		sourceColumn: net_revenue
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column R_score
+		dataType: int64
+		formatString: 0
+		lineageTag: 142e108a-143d-457c-bd37-a98270a4e3d3
+		summarizeBy: none
+		sourceColumn: R_score
+
+		annotation SummarizationSetBy = Automatic
+
+	column F_score
+		dataType: int64
+		formatString: 0
+		lineageTag: 0093f688-fdd8-46c7-b1f3-0d2b414da752
+		summarizeBy: none
+		sourceColumn: F_score
+
+		annotation SummarizationSetBy = Automatic
+
+	column M_score
+		dataType: int64
+		formatString: 0
+		lineageTag: c131b606-9e19-4e1d-84f6-40db590dcc98
+		summarizeBy: none
+		sourceColumn: M_score
+
+		annotation SummarizationSetBy = Automatic
+
+	column RFM_score
+		dataType: int64
+		formatString: 0
+		lineageTag: d0a08877-e95a-4f76-897f-d853a3366e0c
+		summarizeBy: none
+		sourceColumn: RFM_score
+
+		annotation SummarizationSetBy = Automatic
+
+	column segment
+		dataType: string
+		lineageTag: 7933cb1e-8e5b-4648-8ab4-90d0d157e41c
+		summarizeBy: none
+		sourceColumn: segment
+
+		annotation SummarizationSetBy = Automatic
+
+	partition rfm_customers = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("E:\BI\mini\online-retail-analysis\data\processed\powerbi\rfm_customers.csv"),[Delimiter=",", Columns=9, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"customer_id", Int64.Type}, {"recency_days", Int64.Type}, {"frequency", Int64.Type}, {"net_revenue", type number}, {"R_score", Int64.Type}, {"F_score", Int64.Type}, {"M_score", Int64.Type}, {"RFM_score", Int64.Type}, {"segment", type text}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_ResultType = Table
+
