@@ -30,13 +30,14 @@ table rfm_customers
 
 	column net_revenue
 		dataType: double
+		formatString: \£#,0;-\£#,0;\£#,0
 		lineageTag: efefb290-158a-4f4c-b84f-66a92db26ca0
 		summarizeBy: none
 		sourceColumn: net_revenue
 
 		annotation SummarizationSetBy = Automatic
 
-		annotation PBI_FormatHint = {"isGeneralNumber":true}
+		annotation PBI_FormatHint = {"currencyCulture":"en-GB"}
 
 	column R_score
 		dataType: int64
@@ -86,7 +87,7 @@ table rfm_customers
 		mode: import
 		source =
 				let
-				    Source = Csv.Document(File.Contents("E:\BI\mini\online-retail-analysis\data\processed\powerbi\rfm_customers.csv"),[Delimiter=",", Columns=9, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    Source = Csv.Document(File.Contents("E:\BI\mini\online-retail-analysis\data\processed\powerbi\rfm_customers.csv"),[Delimiter=",", Columns=9, Encoding=65001, QuoteStyle=QuoteStyle.None]),
 				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
 				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"customer_id", Int64.Type}, {"recency_days", Int64.Type}, {"frequency", Int64.Type}, {"net_revenue", type number}, {"R_score", Int64.Type}, {"F_score", Int64.Type}, {"M_score", Int64.Type}, {"RFM_score", Int64.Type}, {"segment", type text}})
 				in

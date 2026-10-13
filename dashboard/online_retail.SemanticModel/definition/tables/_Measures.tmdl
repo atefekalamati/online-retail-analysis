@@ -1,29 +1,109 @@
 table _Measures
 	lineageTag: 1b67fd12-00f8-45a9-b1b2-1ee1112b7a2c
 
-	measure 'Net Revenue' =
-			
-			SUM ( fact_sales[line_revenue] )
+	/// Net revenue: purchases plus cancellations (cancellation rows are negative).
+	measure 'Net Revenue' = SUM ( fact_sales[line_revenue] )
+		formatString: \£#,0;-\£#,0;\£#,0
 		lineageTag: 5a9d9331-f9d9-4704-aae3-ac8ba4ee4d59
 
-		annotation PBI_FormatHint = {"isGeneralNumber":true}
+		annotation PBI_FormatHint = {"currencyCulture":"en-GB"}
 
-	column Column1
-		dataType: string
-		lineageTag: c35260e6-7511-4f57-a975-8f876f394f7f
-		summarizeBy: none
-		sourceColumn: Column1
+	/// Gross revenue: purchases only, cancellation rows excluded.
+	measure 'Gross Revenue' = CALCULATE ( [Net Revenue], fact_sales[is_cancelled] = FALSE () )
+		formatString: \£#,0;-\£#,0;\£#,0
+		lineageTag: c81b92c6-ad41-4e10-be30-481f7fc3ebe0
 
-		annotation SummarizationSetBy = Automatic
+		annotation PBI_FormatHint = {"currencyCulture":"en-GB"}
+
+	/// Cancellations: value of cancellation rows (a negative number).
+	measure Cancellations = CALCULATE ( [Net Revenue], fact_sales[is_cancelled] = TRUE () )
+		formatString: \£#,0;-\£#,0;\£#,0
+		lineageTag: 64c3bf94-0412-46d9-9f4d-1e6f9d81ecfa
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-GB"}
+
+	/// Cancellation rate: cancelled value as a share of gross revenue.
+	measure 'Cancellation Rate %' = DIVIDE ( - [Cancellations], [Gross Revenue] )
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: 5c10bbe1-d23b-46fe-8ba2-e2b9a7e1aad6
+
+	/// Orders: distinct purchase invoices, excluding orders that were fully cancelled later.
+	measure Orders =
+			CALCULATE (
+			    DISTINCTCOUNT ( fact_sales[invoice] ),
+			    fact_sales[is_cancelled] = FALSE (),
+			    fact_sales[is_fully_cancelled_order] = FALSE ()
+			)
+		formatString: #,0
+		lineageTag: b36989bf-ee60-44f2-834f-e84f4e4ddd07
+
+	/// Customers: distinct customer IDs with at least one purchase (blank IDs ignored).
+	measure Customers =
+			CALCULATE (
+			    DISTINCTCOUNTNOBLANK ( fact_sales[customer_id] ),
+			    fact_sales[is_cancelled] = FALSE ()
+			)
+		formatString: #,0
+		lineageTag: 2d6e9743-487a-48b9-89b1-ef64e1261bb0
+
+	/// Average order value: revenue of the counted orders divided by the number of orders.
+	measure 'Avg Order Value' =
+			DIVIDE (
+			    CALCULATE (
+			        [Net Revenue],
+			        fact_sales[is_cancelled] = FALSE (),
+			        fact_sales[is_fully_cancelled_order] = FALSE ()
+			    ),
+			    [Orders]
+			)
+		formatString: \£#,0;-\£#,0;\£#,0
+		lineageTag: 7fd680df-0ec9-402e-9ff6-ed028c47a5c9
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-GB"}
+
+	/// Net revenue of the previous month in the current filter context (helper for MoM).
+	measure 'Revenue Previous Month' = CALCULATE ( [Net Revenue], DATEADD ( 'Date'[Date], -1, MONTH ) )
+		formatString: \£#,0;-\£#,0;\£#,0
+		lineageTag: 204ac9c5-6370-4617-9e0f-2f32825ad618
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-GB"}
+
+	/// Month-over-month change in net revenue; blank when there is no previous month.
+	measure 'Revenue MoM %' =
+			VAR PreviousMonth = [Revenue Previous Month]
+			RETURN
+			    IF ( NOT ISBLANK ( PreviousMonth ), DIVIDE ( [Net Revenue] - PreviousMonth, PreviousMonth ) )
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: d5d1d70b-2c9f-4363-b87d-2d6b04ff73d4
+
+	/// Net revenue in the same period one year earlier.
+	measure 'Revenue Same Month LY' = CALCULATE ( [Net Revenue], SAMEPERIODLASTYEAR ( 'Date'[Date] ) )
+		formatString: \£#,0;-\£#,0;\£#,0
+		lineageTag: 72479eef-9254-4be9-b610-7988bc8b41e8
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-GB"}
+
+	/// Year-over-year change in net revenue; blank when last year has no data.
+	measure 'YoY %' =
+			VAR LastYear = [Revenue Same Month LY]
+			RETURN
+			    IF ( NOT ISBLANK ( LastYear ), DIVIDE ( [Net Revenue] - LastYear, LastYear ) )
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: b7335dd0-b223-41c2-bc00-12dcdd4c0635
+
+	/// Helper for the cohort matrix: white text on dark cells (retention >= 25%), dark text otherwise.
+	measure 'Retention Font Color' = IF ( AVERAGE ( cohort_retention[retention_pct] ) >= 0.25, "#FFFFFF", "#0B0B0B" )
+		lineageTag: 8040a6c0-7b53-4893-a1cc-38b44c5bfae0
 
 	partition _Measures = m
 		mode: import
 		source =
 				let
 				    Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i44FAA==", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [Column1 = _t]),
-				    #"Changed Type" = Table.TransformColumnTypes(Source,{{"Column1", type text}})
+				    #"Changed Type" = Table.TransformColumnTypes(Source,{{"Column1", type text}}),
+				    #"Removed Columns" = Table.RemoveColumns(#"Changed Type",{"Column1"})
 				in
-				    #"Changed Type"
+				    #"Removed Columns"
 
 	annotation PBI_ResultType = Table
 
