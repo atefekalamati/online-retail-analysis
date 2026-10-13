@@ -3,10 +3,10 @@
   "name": "dd34c9047d3f993907b3",
   "position": {
     "x": 24,
-    "y": 128,
+    "y": 112,
     "z": 2,
-    "height": 576,
-    "width": 808,
+    "height": 560,
+    "width": 620,
     "tabOrder": 2
   },
   "visual": {
@@ -71,7 +71,8 @@
               },
               "queryRef": "Avg(cohort_retention.retention_pct)",
               "nativeQueryRef": "Average of retention_pct",
-              "displayName": "Retention"
+              "displayName": "Retention",
+              "format": "0%"
             }
           ]
         }
