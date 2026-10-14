@@ -4,6 +4,19 @@ Two years of transactions from a UK online giftware wholesaler, cleaned, analyse
 
 ![Power BI dashboard: Sales Overview](reports/figures/dashboard_overview.png)
 
+## How to Open the Dashboard
+
+**Without Power BI:** open [dashboard/dashboard.pdf](dashboard/dashboard.pdf). It shows both dashboard pages.
+
+**In Power BI Desktop:** the dashboard loads five CSV files from `data/processed/powerbi/`. They are not included in this project because `fact_sales.csv` alone is about 110 MB. Create them first by running the notebooks as described in [How to Run](#how-to-run). Then:
+
+1. Open `dashboard/online_retail.pbip`. As an alternative, open the template `dashboard/online_retail.pbit`.
+2. The model points to `E:\BI\mini\online-retail-analysis\data\processed\powerbi\`. To use the folder where you unzipped the project, go to **Transform data > Data source settings**.
+3. Select each of the five CSV files, click **Change Source**, and choose the same file in your `data/processed/powerbi/` folder.
+4. Click **Close**, then **Refresh** on the Home ribbon.
+
+**If the refresh crashes or runs out of memory:** go to **File > Options and settings > Options > Global > Data Load**. Set **Maximum number of simultaneous evaluations** to **1**, click **OK**, and refresh again.
+
 ## Project Goal
 
 Turn raw transactions into answers a business owner can act on:
@@ -22,7 +35,7 @@ The deliverables are reproducible notebooks, a documented cleaning log, charts, 
 | Content | All transactions of a UK-based online retailer, mainly giftware sold to wholesale customers |
 | Period | 1 December 2009 to 9 December 2011 |
 | Size | 1,067,371 rows in two Excel sheets, `Year 2009-2010` and `Year 2010-2011` |
-| In this repo | No. Download it as described in [How to Run](#how-to-run). |
+| In this project | No. The raw Excel file is about 45 MB. Download it from [UCI](https://archive.ics.uci.edu/dataset/502/online+retail+ii). |
 
 | Column | Description |
 |---|---|
@@ -88,20 +101,16 @@ pip install -r requirements.txt
 **3. Run the notebooks in order.** The commands below regenerate the reports, the charts and `data/processed/powerbi/*.csv`:
 
 ```powershell
-jupyter nbconvert --to notebook --execute --inplace notebooks/01_data_loading_and_quality.ipynb
-jupyter nbconvert --to notebook --execute --inplace notebooks/02_cleaning.ipynb
-jupyter nbconvert --to notebook --execute --inplace notebooks/03_analysis.ipynb
+jupyter nbconvert --to notebook --execute --inplace --ExecutePreprocessor.record_timing=False notebooks/01_data_loading_and_quality.ipynb
+jupyter nbconvert --to notebook --execute --inplace --ExecutePreprocessor.record_timing=False notebooks/02_cleaning.ipynb
+jupyter nbconvert --to notebook --execute --inplace --ExecutePreprocessor.record_timing=False notebooks/03_analysis.ipynb
 ```
+
+The `record_timing=False` option keeps run timestamps out of the notebook files.
 
 Notebook 01 reads the Excel file once, which takes a few minutes, and caches it as parquet. Later runs take seconds.
 
-**4. Open the dashboard.** Open `dashboard/online_retail.pbip` in Power BI Desktop.
-
-The model loads the CSVs from `E:\BI\mini\online-retail-analysis\data\processed\powerbi\`. If your project is in another folder, update the path:
-1. Go to **Transform data > Data source settings**.
-2. Select each of the five CSV files.
-3. Click **Change Source**, then point it to your `data/processed/powerbi/` folder.
-4. Click **Close & Apply**, then **Refresh**.
+**4. Open the dashboard.** Follow [How to Open the Dashboard](#how-to-open-the-dashboard).
 
 ## Data Quality Notes
 
