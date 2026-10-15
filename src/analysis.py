@@ -235,7 +235,8 @@ SEGMENT_ORDER = [name for name, _ in RFM_SEGMENT_RULES]
 def rfm_table(cust: pd.DataFrame) -> tuple[pd.DataFrame, int, pd.Timestamp]:
     """Recency, frequency and net monetary value per customer.
 
-    Snapshot = last InvoiceDate + 1 day. Customers with M <= 0 are dropped.
+    Snapshot = last InvoiceDate + 1 day. Customers with M <= 0 are dropped, where M is
+    rounded to pence first, so a float residue such as 1e-14 from fully returned orders counts as 0.
     Returns the table, the number of dropped customers and the snapshot date.
     """
     snapshot = cust["InvoiceDate"].max().normalize() + pd.Timedelta(days=1)
@@ -245,7 +246,7 @@ def rfm_table(cust: pd.DataFrame) -> tuple[pd.DataFrame, int, pd.Timestamp]:
         "frequency": sales.groupby("Customer ID")["Invoice"].nunique(),
         "monetary": cust.groupby("Customer ID")["line_revenue"].sum(),
     })
-    keep = rfm["monetary"] > 0
+    keep = rfm["monetary"].round(2) > 0
     return rfm[keep].astype({"recency_days": int, "frequency": int}), int((~keep).sum()), snapshot
 
 

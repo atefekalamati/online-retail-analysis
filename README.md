@@ -76,6 +76,8 @@ online-retail-analysis/
 │   ├── measures.dax             # all DAX measures with comments
 │   ├── theme.json               # Power BI theme matching the Python charts
 │   └── BUILD_GUIDE.md           # how the dashboard was built, step by step
+├── tests/                       # pytest suite: loading, cleaning, reconciliation, analysis, exports
+├── pytest.ini
 ├── requirements.txt
 └── README.md
 ```
@@ -111,6 +113,26 @@ The `record_timing=False` option keeps run timestamps out of the notebook files.
 Notebook 01 reads the Excel file once, which takes a few minutes, and caches it as parquet. Later runs take seconds.
 
 **4. Open the dashboard.** Follow [How to Open the Dashboard](#how-to-open-the-dashboard).
+
+## Tests
+
+The `tests/` folder holds a pytest suite that checks the pipeline and the reported numbers. From the project root:
+
+```powershell
+python -m pytest
+```
+
+| File | What it checks |
+|---|---|
+| `test_loading.py` | Both Excel sheets are stacked into 1,067,371 rows, with the expected column names and types. |
+| `test_cleaning_rules.py` | Each step in `reports/cleaning_log.md` on a tiny hand-made table, plus the logged row counts. |
+| `test_financial_reconciliation.py` | Net = gross − cancellations = £18,927,399. Also orders 39,246, customers 5,852, AOV £489, and cancellation rates of 7.1% (all codes) and 3.6% (products). |
+| `test_analysis.py` | RFM scores from 1 to 5, each customer in exactly one segment, segment shares summing to 100%, top-20% share of 77%, cohort retention, Pareto and LTV. |
+| `test_powerbi_exports.py` | The five dashboard CSVs exist, have the columns the Power BI model reads, and match the analysis totals. |
+
+**Without the data:** the raw Excel file and the generated CSVs are not part of the project. Tests that need them are skipped, and pytest prints the reason. The tests on hand-made data and on the committed report tables still run.
+
+**Speed:** with the data, the suite takes about a minute. It reads the parquet cache written by notebook 01, which holds the same rows as the Excel file. Delete `data/processed/online_retail_raw.parquet` to make the tests read the Excel file directly, which takes a few minutes.
 
 ## Data Quality Notes
 
@@ -168,7 +190,7 @@ The year-on-year comparisons cover January to November of 2010 and 2011.
 |---|---|---|
 | 1 | **Revenue is flat, and bigger orders offset fewer orders.** Net revenue grew **+2.3%**, from £8.38M to £8.57M. Orders fell **3.6%** and AOV rose **5.5%**, from £475 to £501. | Growth has to come from order frequency and new customers. |
 | 2 | **The business is highly seasonal.** September to November bring **41%** of January-November revenue. November peaks at **£1.43M**, about 3 times April. | Stock, staff and campaigns must be ready by August. |
-| 3 | **Revenue is concentrated.** The top **20% of customers bring 77%** of customer revenue, and **22% of products make 80%** of product revenue. The **UK accounts for 85%**. | Key-account care for top customers. Win back the **233 "Cannot Lose Them" customers**, worth £895K, who have been inactive for about 11 months. |
+| 3 | **Revenue is concentrated.** The top **20% of customers bring 77%** of customer revenue, and **22% of products make 80%** of product revenue. The **UK accounts for 85%**. | Key-account care for top customers. Win back the **236 "Cannot Lose Them" customers**, worth £901K, who have been inactive for about 11 months. |
 | 4 | **Most new customers don't return.** About **21%** buy again in month 1 and in month 3. A new customer brings **£634** in 3 months and **£1,373** in 12. | A second-purchase program has a large payoff. Track month-1 retention as a core KPI. |
 | 5 | **The 2011 cancellation spike is two bulk orders.** The rate rose from **2.5%** to **4.8%**, but two orders of 80,995 and 74,215 units, cancelled within minutes, account for about **£245K**. Without them the rate is **2.3%**. | Flag one-off bulk orders in KPI reporting, and check very large orders before booking them. |
 

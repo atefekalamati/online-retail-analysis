@@ -99,7 +99,7 @@ Then:
 
 `cohort_retention`, `segment_summary` and `monthly_kpis` stay **unrelated**. They are pre-aggregated tables.
 
-37 customers with net revenue <= 0 are not in `rfm_customers`. Their sales, and sales without a Customer ID, show as segment "(Blank)" when you slice by segment.
+43 customers with net revenue <= 0 (rounded to pence) are not in `rfm_customers`. Their sales, and sales without a Customer ID, show as segment "(Blank)" when you slice by segment.
 
 **Measures:** select `fact_sales`, choose **Home > New measure**, and paste each measure from `measures.dax`, one at a time.
 Format them as follows:
